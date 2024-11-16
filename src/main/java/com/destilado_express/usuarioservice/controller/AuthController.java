@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.destilado_express.usuarioservice.model.AuthRequest;
 import com.destilado_express.usuarioservice.model.AuthResponse;
 import com.destilado_express.usuarioservice.model.Usuario;
-import com.destilado_express.usuarioservice.service.JwtService;
-import com.destilado_express.usuarioservice.service.UsuarioService;
+import com.destilado_express.usuarioservice.service.auth.JwtService;
+import com.destilado_express.usuarioservice.service.user.UsuarioService;
 
 import lombok.extern.java.Log;
 

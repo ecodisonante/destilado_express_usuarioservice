@@ -1,4 +1,4 @@
-package com.destilado_express.usuarioservice.service;
+package com.destilado_express.usuarioservice.service.user;
 
 import com.destilado_express.usuarioservice.model.Usuario;
 import java.util.List;

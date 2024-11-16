@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.destilado_express.usuarioservice.service.JwtService;
+import com.destilado_express.usuarioservice.service.auth.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

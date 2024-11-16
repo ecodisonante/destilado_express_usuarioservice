@@ -1,12 +1,12 @@
 package com.destilado_express.usuarioservice.controller;
 
 import com.destilado_express.usuarioservice.model.Usuario;
-import com.destilado_express.usuarioservice.service.UsuarioService;
+import com.destilado_express.usuarioservice.service.auth.AuthService;
+import com.destilado_express.usuarioservice.service.user.UsuarioService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +26,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private AuthService authService;
+   
     // Obtener todos los usuarios
     @GetMapping
     public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
@@ -65,29 +68,21 @@ public class UsuarioController {
     // Actualizar usuario
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
-
-        // Obtener correo y rol del usuario autenticado
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-
-        // Si no es admin solo puede modificar su propio usuario
-        if (!isAdmin) {
-            Usuario registeredUser = usuarioService.getUsuarioByEmail(username);
-            if (registeredUser.getId() != id) {
+        // Verificar si el usuario es admin
+        if (!authService.esAdmin()) {
+            Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
+            if (usuarioAutenticado.getId() != id) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("No tienes permiso para actualizar otros usuarios");
             }
         }
 
         Usuario usuario = usuarioService.actualizarUsuario(id, usuarioActualizado);
-        if (usuario != null) {
-            return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NO se encontró el usuario con ese ID");
-        }
+        return usuario != null
+                ? ResponseEntity.ok("Usuario actualizado")
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
     }
+
 
     // Eliminar un usuario por ID
     @DeleteMapping("/{id}")

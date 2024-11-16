@@ -1,4 +1,4 @@
-package com.destilado_express.usuarioservice.service;
+package com.destilado_express.usuarioservice.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
