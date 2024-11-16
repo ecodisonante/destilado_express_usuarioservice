@@ -5,7 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.destilado_express.usuarioservice.model.Usuario;
-import com.destilado_express.usuarioservice.service.UsuarioService;
+import com.destilado_express.usuarioservice.service.user.UsuarioService;
 
 @Service
 public class AuthService {

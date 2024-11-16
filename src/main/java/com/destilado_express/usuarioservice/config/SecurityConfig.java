@@ -14,7 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.destilado_express.usuarioservice.service.CustomUserDetailsService;
+import com.destilado_express.usuarioservice.service.user.CustomUserDetailsService;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration

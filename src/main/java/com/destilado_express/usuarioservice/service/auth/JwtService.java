@@ -1,4 +1,4 @@
-package com.destilado_express.usuarioservice.service;
+package com.destilado_express.usuarioservice.service.auth;
 
 public interface JwtService {
     String generateToken(String username, String role);
