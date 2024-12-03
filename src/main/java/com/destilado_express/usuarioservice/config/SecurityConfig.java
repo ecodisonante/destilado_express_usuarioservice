@@ -52,10 +52,10 @@ public class SecurityConfig {
                         // acceso publico
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").anonymous()
                         // solo registrados
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/usuarios").authenticated()
                         // solo admin
                         .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole("ADMIN")
                         // otros
