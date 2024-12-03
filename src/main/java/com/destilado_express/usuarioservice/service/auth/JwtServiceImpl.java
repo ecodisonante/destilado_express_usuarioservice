@@ -66,4 +66,14 @@ public class JwtServiceImpl implements JwtService {
                 .getPayload()
                 .get("role"); // Extraer el rol del payload
     }
+
+    // Método para extraer el id del usuario desde el token
+    public Long extractId(String token) {
+        return (Long) Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("id");
+    }
 }
