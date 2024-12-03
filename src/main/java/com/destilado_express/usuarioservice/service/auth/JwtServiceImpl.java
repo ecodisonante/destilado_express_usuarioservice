@@ -22,7 +22,7 @@ public class JwtServiceImpl implements JwtService {
     public String generateToken(String username, Usuario user) {
         return Jwts.builder()
                 .subject(username)
-                .claim("role", user.getRol().getId())
+                .claim("role", user.getRol().getNombre())
                 .claim("id", user.getId())
                 .claim("name", user.getNombre())
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -57,6 +57,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     // Método para extraer el rol del usuario desde el token
+    @Override
     public String extractRole(String token) {
         return (String) Jwts.parser()
                 .verifyWith(getSigningKey())
