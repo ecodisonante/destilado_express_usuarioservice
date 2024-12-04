@@ -57,6 +57,21 @@ public class UsuarioController {
         }
     }
 
+    // Recupearr contraseña
+    @PostMapping("/recover")
+    public ResponseEntity<String> recuperaContrasena(@RequestParam String email) {
+        Usuario usuario = usuarioService.getUsuarioByEmail(email);
+        if (usuario != null) {
+            return ResponseEntity.ok()
+                    .header("Content-Type", "text/plain")
+                    .body("Revisa tu correo para restablecer tu contraseña.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .header("Content-Type", "text/plain")
+                    .body("No se encontró ningún usuario con ese email.");
+        }
+    }
+
     // Obtener usuario por email
     @GetMapping("/email")
     public ResponseEntity<Usuario> obtenerUsuarioPorEmail(@RequestParam String email) {
