@@ -3,17 +3,15 @@ package com.destilado_express.usuarioservice.service.auth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.crypto.SecretKey;
+
+import com.destilado_express.usuarioservice.model.Usuario;
 
 @Service
 public class JwtServiceImpl implements JwtService {
 
-    private final String SECRET_KEY = "Juro solemnemente que mis intenciones no son buenas";
+    private static final String SECRET_KEY = "Juro solemnemente que mis intenciones no son buenas";
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = SECRET_KEY.getBytes();
@@ -21,13 +19,12 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(String username, String role) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
-        
+    public String generateToken(String username, Usuario user) {
         return Jwts.builder()
-                .claims().empty().add(claims).and()
                 .subject(username)
+                .claim("role", user.getRol().getNombre())
+                .claim("id", user.getId())
+                .claim("name", user.getNombre())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas de validez
                 .signWith(getSigningKey())
@@ -60,6 +57,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     // Método para extraer el rol del usuario desde el token
+    @Override
     public String extractRole(String token) {
         return (String) Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -67,5 +65,15 @@ public class JwtServiceImpl implements JwtService {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("role"); // Extraer el rol del payload
+    }
+
+    // Método para extraer el id del usuario desde el token
+    public Long extractId(String token) {
+        return (Long) Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("id");
     }
 }

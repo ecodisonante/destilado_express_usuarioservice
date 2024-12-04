@@ -23,12 +23,15 @@ import java.util.List;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    @Autowired
     private UsuarioService usuarioService;
-
-    @Autowired
     private AuthService authService;
-   
+    
+    @Autowired
+    public UsuarioController(UsuarioService usuarioService, AuthService authService) {
+        this.usuarioService = usuarioService;
+        this.authService = authService;
+    }
+
     // Obtener todos los usuarios
     @GetMapping
     public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
@@ -38,12 +41,36 @@ public class UsuarioController {
 
     // Obtener usuario por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable Long id) {
+    public ResponseEntity<Object> obtenerUsuarioPorId(@PathVariable Long id) {
+        // Verificar si el usuario es admin
+        if (!authService.esAdmin()) {
+            Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
+            if (usuarioAutenticado.getId().equals(id)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("No tienes permiso para ver otros usuarios");
+            }
+        }
+
         Usuario usuario = usuarioService.getUsuarioById(id);
         if (usuario != null) {
             return new ResponseEntity<>(usuario, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Recupearr contraseña
+    @PostMapping("/recover")
+    public ResponseEntity<String> recuperaContrasena(@RequestParam String email) {
+        Usuario usuario = usuarioService.getUsuarioByEmail(email);
+        if (usuario != null) {
+            return ResponseEntity.ok()
+                    .header("Content-Type", "text/plain")
+                    .body("Revisa tu correo para restablecer tu contraseña.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .header("Content-Type", "text/plain")
+                    .body("No se encontró ningún usuario con ese email.");
         }
     }
 
@@ -71,7 +98,7 @@ public class UsuarioController {
         // Verificar si el usuario es admin
         if (!authService.esAdmin()) {
             Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
-            if (usuarioAutenticado.getId() != id) {
+            if (usuarioAutenticado.getId().equals(id)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("No tienes permiso para actualizar otros usuarios");
             }
@@ -82,7 +109,6 @@ public class UsuarioController {
                 ? ResponseEntity.ok("Usuario actualizado")
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
     }
-
 
     // Eliminar un usuario por ID
     @DeleteMapping("/{id}")
