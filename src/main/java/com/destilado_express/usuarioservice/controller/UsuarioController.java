@@ -2,7 +2,6 @@ package com.destilado_express.usuarioservice.controller;
 
 import com.destilado_express.usuarioservice.model.Usuario;
 import com.destilado_express.usuarioservice.service.auth.AuthService;
-import com.destilado_express.usuarioservice.service.auth.JwtService;
 import com.destilado_express.usuarioservice.service.user.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +23,14 @@ import java.util.List;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    @Autowired
     private UsuarioService usuarioService;
-
-    @Autowired
     private AuthService authService;
+    
+    @Autowired
+    public UsuarioController(UsuarioService usuarioService, AuthService authService) {
+        this.usuarioService = usuarioService;
+        this.authService = authService;
+    }
 
     // Obtener todos los usuarios
     @GetMapping
@@ -43,7 +45,7 @@ public class UsuarioController {
         // Verificar si el usuario es admin
         if (!authService.esAdmin()) {
             Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
-            if (usuarioAutenticado.getId() != id) {
+            if (usuarioAutenticado.getId().equals(id)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("No tienes permiso para ver otros usuarios");
             }
@@ -96,7 +98,7 @@ public class UsuarioController {
         // Verificar si el usuario es admin
         if (!authService.esAdmin()) {
             Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
-            if (usuarioAutenticado.getId() != id) {
+            if (usuarioAutenticado.getId().equals(id)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("No tienes permiso para actualizar otros usuarios");
             }

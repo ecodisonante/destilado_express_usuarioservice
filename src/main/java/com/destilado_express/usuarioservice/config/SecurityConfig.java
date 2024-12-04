@@ -27,8 +27,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
     private JwtRequestFilter jwtRequestFilter;
+    private String usuariosApi = "/api/usuarios";
+
+    @Autowired
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -48,17 +53,17 @@ public class SecurityConfig {
 
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
 
-                .authorizeHttpRequests((req) -> req
+                .authorizeHttpRequests(req -> req
                         // acceso publico
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").anonymous()
-                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/usuarios/recover").permitAll()
+                        .requestMatchers(HttpMethod.POST, usuariosApi).permitAll()
+                        .requestMatchers(HttpMethod.POST, usuariosApi + "/recover").permitAll()
                         // solo registrados
-                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/usuarios").authenticated()
+                        .requestMatchers(HttpMethod.GET, usuariosApi + "/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, usuariosApi).authenticated()
                         // solo admin
-                        .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, usuariosApi).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, usuariosApi + "/**").hasRole("ADMIN")
                         // otros
                         .anyRequest().authenticated());
 
@@ -75,8 +80,10 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:4200");
-        config.addAllowedOrigin("http://frontend:4200");
+        config.addAllowedOriginPattern("http://localhost");
+        config.addAllowedOriginPattern("http://localhost:*");
+        config.addAllowedOriginPattern("http://frontend");
+        config.addAllowedOriginPattern("http://frontend:*");
         config.addAllowedHeader("*");
         config.setAllowedMethods(Arrays.asList("*"));
 
