@@ -30,7 +30,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // Excluir de la validación del token
         Map<String, String> ignoredRequests = Map.of(
-                "/api/auth/login", "POST" // login
+                "/api/auth/login", "POST", // login
+                "/api/usuarios", "POST", // registrarse
+                "/api/usuarios/recover", "POST" // recuperar contraseña
         );
 
         String path = request.getRequestURI();

@@ -51,12 +51,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests((req) -> req
                         // acceso publico
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").anonymous()
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios/recover").permitAll()
                         // solo registrados
                         .requestMatchers(HttpMethod.GET, "/api/usuarios/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/usuarios").authenticated()
                         // solo admin
                         .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole("ADMIN")
                         // otros
                         .anyRequest().authenticated());
