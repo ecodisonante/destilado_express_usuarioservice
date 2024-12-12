@@ -24,14 +24,17 @@ import lombok.extern.java.Log;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Autowired
     private JwtService jwtService;
+    private UsuarioService usuarioService;
 
     @Autowired
-    private UsuarioService usuarioService;
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService,
+            UsuarioService usuarioService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.usuarioService = usuarioService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
@@ -45,7 +48,7 @@ public class AuthController {
 
             // Generar token
             String token = jwtService.generateToken(authentication.getName(), user);
-            
+
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (Exception e) {
             log.severe(e.getMessage() + "\n" + e.getStackTrace());

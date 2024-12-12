@@ -98,7 +98,7 @@ public class UsuarioController {
         // Verificar si el usuario es admin
         if (!authService.esAdmin()) {
             Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
-            if (usuarioAutenticado.getId().equals(id)) {
+            if (!usuarioAutenticado.getId().equals(id)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("No tienes permiso para actualizar otros usuarios");
             }
