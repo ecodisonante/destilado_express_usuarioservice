@@ -4,6 +4,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import java.util.Date;
+import java.util.Map;
+
 import javax.crypto.SecretKey;
 
 import com.destilado_express.usuarioservice.model.Usuario;
@@ -69,11 +71,20 @@ public class JwtServiceImpl implements JwtService {
 
     // Método para extraer el id del usuario desde el token
     public Long extractId(String token) {
-        return (Long) Jwts.parser()
+       Map<String, Object> claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .get("id");
+                .getPayload();
+    
+        // Convertir explícitamente a Long
+        Object idObject = claims.get("id");
+        if (idObject instanceof Integer) {
+            return ((Integer) idObject).longValue();
+        } else if (idObject instanceof Long) {
+            return (Long) idObject;
+        } else {
+            throw new IllegalArgumentException("El campo 'id' no es un número válido");
+        }
     }
 }
