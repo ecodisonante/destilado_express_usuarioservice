@@ -23,8 +23,12 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    public JwtRequestFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
