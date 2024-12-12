@@ -24,7 +24,7 @@ class JwtServiceImplTest {
         jwtService = new JwtServiceImpl();
         String username = "testuser";
         String role = "ROLE_USER";
-        token = generateTestToken(username, role);
+        token = generateTestToken(username, role, 1L);
     }
 
     @Test
@@ -36,8 +36,6 @@ class JwtServiceImplTest {
         var result = jwtService.generateToken("user", usuario);
         assertInstanceOf(String.class, result);
     }
-
-
 
     @Test
     void shouldValidateTokenSuccessfully() {
@@ -69,14 +67,31 @@ class JwtServiceImplTest {
     }
 
     @Test
-    void shouldExtractIdFromToken() {
-        // act
+    void shouldExtractIntIdFromToken() {
+        // int ID
         Long id = jwtService.extractId(token);
-        // assert
         assertEquals(1L, id);
     }
 
-    private String generateTestToken(String username, String role) {
+    @Test
+    void shouldExtractLongIdFromToken() {
+        // long ID
+        token = generateTestToken("testuser", "ROLE_USER", 9999999999999L);
+        Long id = jwtService.extractId(token);
+        assertEquals(9999999999999L, id);
+    }
+
+    @Test
+    void extractIdFromTokenFails() {
+        // NaN ID
+        token = generateTestToken("testuser", "ROLE_USER", "potato");
+        assertThrows(IllegalArgumentException.class, () -> jwtService.extractId(token));
+    }
+
+
+
+    
+    private String generateTestToken(String username, String role, Object id) {
 
         byte[] keyBytes = SECRET_KEY.getBytes();
         var sign = Keys.hmacShaKeyFor(keyBytes);
@@ -84,7 +99,7 @@ class JwtServiceImplTest {
         return Jwts.builder()
                 .subject(username)
                 .claim("role", role)
-                .claim("id", 1L)
+                .claim("id", id)
                 .claim("name", "Test User")
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas de validez
